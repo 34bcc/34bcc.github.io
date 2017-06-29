@@ -3,7 +3,7 @@ description: >
   is good.
 baseurl: ""
 url: "http://34b.cc"
-paginate:	2 # The number of posts to show per page on your homepage
+paginate:	0 # The number of posts to show per page on your homepage
 name: "34b.cc"
 markdown: kramdown
 permalink: none
