@@ -1,0 +1,22 @@
+<html>
+<head>
+<script>
+    var kvs={
+    "default":"http://weibo.com/tohno",
+    "b":"http://baidu.com",
+    "c":"http://cnbeta.com",
+    "pub":"https://www.ncbi.nlm.nih.gov/pubmed/",
+    "g":"http://weibo.com/u/3591916657?profile_ftype=1&is_all=1#_0",
+    "m":"https://exmail.qq.com/cgi-bin/loginpage",
+    "add":"https://github.com/igacc/igacc.github.io/edit/master/_includes/dirhead.html",     
+    };
+    var hash=window.location.hash.substr(1);
+    if (hash==""){hash="default";}
+    if (hash!="default"){window.location.href=kvs[hash];}
+    window.onhashchange=function(){window.location.href=kvs[hash];};
+</script>
+<title>igacc redirector</title>
+</head>
+<body>
+</body>
+</html>
