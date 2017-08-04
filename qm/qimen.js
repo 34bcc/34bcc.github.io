@@ -183,13 +183,8 @@ function setElements(dx){
     var dgan=(ju>0)?"012345678":"087654321";
     var tgan="38165072";
     var k,xunshou,xid,xpos,mid,mpos,spos
-    var osx,jux,c,temp,temp2;
-    var Ele={
-        "dgan":[],
-        "dganx":[],
-        "tgan":[],
-        "tganx":[],
-    }
+    var osx,jux,c,temp,temp2,dbg,xpos0,mpos0,spos0;
+    dbg="";
     //0~8宫对应的六三序号，地盘干
     jux=Math.abs(ju)-1;
     dgan=dgan.substr(-jux) + dgan.substr(0,9-jux); //if (k!=0)
@@ -203,15 +198,15 @@ function setElements(dx){
     xunshou=k;
     //xid：旬首宫位，也是星（值符）的id
     //mid：门（值使）的序号，首先根据xid确定宫对应的门，需要再转换成八个里面的顺序
-    //console.log("xunshou",xunshou);
     xid=dgan.indexOf(xunshou);
-    if (xid==4) xid=(ju>0)?tconfig.yangdunzhonggong:2;
+    //if (xid==4) xid=(ju>0)?tconfig.yangdunzhonggong:2;
     mid=t.menbyB.indexOf(t.menbyG[xid]);
     //xpos：星（值符）位置即时干所在宫
     //因为现在时间的天干有10种，宫只有9个，所以如果时干为甲，那么转换成旬首对应的六仪所在宫
     k=t.liusan.indexOf(ab.substr(0,1));
     k=(k<0)?xunshou:k;
     xpos=dgan.indexOf(k);
+    xpos0=xpos;
     //mpos：门（值使）位置，根据 时支 与 旬首地支的差值，从 旬首宫位 开始，顺推门盘宫位
     k=t.zhi.indexOf(ab.substr(1,1))-t.zhi.indexOf(t.xunshou[xunshou]);
     if (k<0) k=k+12;
@@ -246,10 +241,10 @@ function setElements(dx){
     
     //输出布局
     osx="<h1>"+tconfig.apptitle+"</h1>";
-    osx=osx+"<br />" + "时间 "+dx.toString();
-    osx=osx+"<br />" + "节气 "+jieqi(dx).name+"上中下"[sanyuan(dx)]+"元("+jieqi(dx).past+"天) " +"阴阳"[(Math.abs(ju)+ju)/ju/2]+Math.abs(ju)+"局";
-    osx=osx+"<br />" +"四柱 "+nianzhu(dx)+yuezhu(dx)+rizhu(dx)+shizhu(dx);
-    osx=osx+"<br />"
+    osx=osx+"<br />" + "时间&nbsp;&nbsp;"+dx.toString();
+    osx=osx+"<br />" + "节气&nbsp;&nbsp;"+"阴阳"[(Math.abs(ju)+ju)/ju/2]+"遁&nbsp;&nbsp;" + "零一二三四五六七八九"[Math.abs(ju)]+"局&nbsp;&nbsp;"+jieqi(dx).name+"&nbsp;&nbsp;"+"上中下"[sanyuan(dx)]+"元("+jieqi(dx).past+"天) ";
+    osx=osx+"<br />" +"四柱&nbsp;&nbsp;"+nianzhu(dx)+"&nbsp;&nbsp;"+yuezhu(dx)+"&nbsp;&nbsp;"+rizhu(dx)+"&nbsp;&nbsp;"+shizhu(dx);
+    osx=osx+"<br /><br />"
     for (var i=0;i<3;i++){
         for (var j=0;j<3;j++){
             //k为顺序数字
@@ -261,7 +256,7 @@ function setElements(dx){
             osx=osx + t.liusan[dgan[k]];
             temp2=tgan[k];
             //if (temp2==4) temp2=(ju>0)?tconfig.yangdunzhonggong:2;
-            osx=osx + t.liusan[temp2];
+            //osx=osx + t.liusan[temp2];
             //osx=osx + t.liusan[tgan[t.ordplate.indexOf(k)]];
             //osx=osx + t.liusan[temp[t.ordplate.indexOf(k)]];
             console.log(k,temp2,t.liusan[temp2]);
@@ -269,6 +264,14 @@ function setElements(dx){
         }
         osx=osx + "<br />";
     }
+    osx=osx + "<hr />";
+    dbg=dbg+"<br />"+ "地盘干 -> "+dgan;
+    dbg=dbg+"<br />"+ "旬首"+xunshou+"(+1) -> 甲"+t.xunshou[xunshou]+t.liusan[xunshou]+" -> "+t.liusan[xunshou]+"在"+dgan.indexOf(xunshou)+"(+1)宫 -> "+t.baguabyG[dgan.indexOf(xunshou)]+"宫 -> xid:"+xid+" -> "+t.xingbyG[xid]+"星(值符);"+t.menbyG[xid]+"门(值使)";
+    dbg=dbg+"<br />"+ "时干为"+ab.substr(0,1)+" -> 在地盘中寻找 -> 位于"+t.baguabyG[xpos]+"宫 -> 确定了"+t.xingbyG[xid]+"星的位置";
+    temp2=(t.zhi.indexOf(ab.substr(1,1))-t.zhi.indexOf(t.xunshou[xunshou])+12)%12;
+    dbg=dbg+"<br />"+ "旬首地支为甲"+t.xunshou[xunshou]+ "的"+t.xunshou[xunshou]+ " -> 往后推"+temp2+"个元素 -> " + "为"+ab.substr(1,1)+"的时支 -> "+"阴阳"[(Math.abs(ju)+ju)/ju/2]+"遁就"+"逆顺"[(Math.abs(ju)+ju)/ju/2]+"着值符位置"+t.baguabyG[xpos]+"宫推"+temp2+"个元素 -> "+t.baguabyG[mpos]+"宫即为"+t.menbyG[xid]+"门(值使)位置";
+    dbg=dbg+"<br />"+ t.xingbyG[xid]+ "(" + t.baguabyG[xpos] + ") " + t.menbyB[mid] + "(" + t.baguabyG[mpos] + ")" + tgan
+    osx=osx + dbg;
     return osx;
 }
 function drawlayer(){
