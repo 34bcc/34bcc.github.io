@@ -5,11 +5,13 @@
 <script src="qimen.js"></script>
 <title>QIMEN</title>
 <style type="text/css">
+body{background-color:rgb(12,16,33);color:rgb(246,246,248)}
 h2 {font-weight: normal}
 h3 {font-weight: normal}
 </style>
 </head>
-<body style="background-color:rgb(12,16,33);color:rgb(246,246,248)">
+<body>
+<div>
 <script>
 var dx=new Date();
 function loaddx(){
@@ -28,7 +30,7 @@ dx.setDate(hash.substr(6,2));
 dx.setHours(hash.substr(8,2));
 dx.setMinutes(hash.substr(10,2));
 dx.setSeconds(hash.substr(12,2));
-document.write(setElements(dx));
+document.getElementsByTagName("div")[0].innerHTML=setElements(dx);
 }
 document.title=tconfig.apptitle;
 window.onhashchange=function(){
@@ -41,5 +43,6 @@ loaddx();
 //dx.setTime(Date.parse("2017/1/6 0:0:0"));
 //document.write(jieqi(dx).name + jieqi(dx).past);
 </script>
+</div>
 </body>
 </html>
