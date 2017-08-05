@@ -183,7 +183,7 @@ function setElements(dx){
     var dgan=(ju>0)?"012345678":"087654321";
     var tgan="38165072";
     var k,xunshou,xid,xpos,mid,mpos,spos
-    var osx,jux,c,temp,temp2,dbg,xpos0,mpos0,spos0;
+    var osx,jux,c,temp,temp2,temp3,temp4,dbg,xpos0,mpos0,spos0;
     dbg="";
     //0~8宫对应的六三序号，地盘干
     jux=Math.abs(ju)-1;
@@ -199,7 +199,6 @@ function setElements(dx){
     //xid：旬首宫位，也是星（值符）的id
     //mid：门（值使）的序号，首先根据xid确定宫对应的门，需要再转换成八个里面的顺序
     xid=dgan.indexOf(xunshou);
-    //if (xid==4) xid=(ju>0)?tconfig.yangdunzhonggong:2;
     mid=t.menbyB.indexOf(t.menbyG[xid]);
     //xpos：星（值符）位置即时干所在宫
     //因为现在时间的天干有10种，宫只有9个，所以如果时干为甲，那么转换成旬首对应的六仪所在宫
@@ -214,12 +213,11 @@ function setElements(dx){
     k=(k+18)%9
     mpos=k;
     //spos：八神位置
-    if (mpos==4) mpos=(ju>0)?tconfig.yangdunzhonggong:2;
-    if (xpos==4) xpos=(ju>0)?tconfig.yangdunzhonggong:2;
+    if (mpos==4) mpos=(ju>0)?tconfig.yangdunzhonggong-1:1;
+    if (xpos==4) xpos=(ju>0)?tconfig.yangdunzhonggong-1:1;
     spos=xpos;
     //天盘干：根据地盘干，进行旋转 时干所在宫位-旬首对应地盘
-    temp2=dgan.indexOf(t.gan.indexOf(ab.substr(0,1)));
-    c=t.ordplate.indexOf(temp2)-t.ordplate.indexOf(xid);
+    c=(t.ordplate.indexOf(xpos)-t.ordplate.indexOf(dgan.indexOf(xunshou))+8)%8;
     console.log("temp:",temp2,t.ordplate.indexOf(temp2)," ; ","xid",xid,t.ordplate.indexOf(xid),"xpos:",xpos)
     c=(c-1+8)%8;
     tgan="";
@@ -228,14 +226,26 @@ function setElements(dx){
     }
     tgan=tgan.substr(-(8-c)) + tgan.substr(0,c)
     temp=tgan;
-    tgan="";
+    //计算宫位对应的天盘干
+    var tgax=[9,9,9,9,9,9,9,9,9,9];
+    tgan="000000000";
+    temp2=(t.ordplate.indexOf(xpos)-t.ordplate.indexOf(dgan.indexOf(xunshou))+8)%8;
+    console.log("temp2",temp2);
     for (var i=0;i<9;i++){
-        temp2=i;
-        if (i==4) 
-            tgan=tgan + "9"
-        else
-            tgan=tgan + temp[t.ordplate.indexOf(temp2)]
+        temp4=dgan.indexOf(i);
+        if (temp4==4) {
+            temp4=(ju>0)?tconfig.yangdunzhonggong-1:1;
+            temp3=t.ordplate[(temp2+t.ordplate.indexOf(temp4)+8)%8];
+            tgax[9]=i+temp3/10;
+        }
+        else{
+            
+            temp3=t.ordplate[(temp2+t.ordplate.indexOf(temp4)+8)%8];
+            tgax[temp3]=i;
+            console.log("temp3",temp3,i,tgan);
+        }
     }
+    tgan=tgax.join("");
     console.log("tgan",tgan);
     console.log(t.xingbyG[xid]+ "(" + t.baguabyG[xpos] + ") " + t.menbyB[mid] + "(" + t.baguabyG[mpos] + ")" + tgan);
     
@@ -251,26 +261,43 @@ function setElements(dx){
             k=j+i*3;
             //转换成宫格数字
             k=t.ordreal[k];
+            if (k==4){
+                temp4=(ju>0)?tconfig.yangdunzhonggong-1:1;
+                osx=osx + t.liusan[dgan[k]]+t.baguabyG[temp4];
+                osx=osx + t.liusan[tgan.substr(-3,1)]+t.baguabyG[tgan.substr(-1,1)];
+            }
+            else{
+                
+                
             //osx=osx + k + ".";
             osx=osx + t.baguabyG[k];
             osx=osx + t.liusan[dgan[k]];
-            temp2=tgan[k];
-            //if (temp2==4) temp2=(ju>0)?tconfig.yangdunzhonggong:2;
-            //osx=osx + t.liusan[temp2];
-            //osx=osx + t.liusan[tgan[t.ordplate.indexOf(k)]];
-            //osx=osx + t.liusan[temp[t.ordplate.indexOf(k)]];
-            console.log(k,temp2,t.liusan[temp2]);
+            osx=osx + t.liusan[tgan[k]];
+            
+            }
             osx=osx + "&nbsp;&nbsp;&nbsp;&nbsp;";
         }
         osx=osx + "<br />";
     }
-    osx=osx + "<hr />";
-    dbg=dbg+"<br />"+ "地盘干 -> "+dgan;
-    dbg=dbg+"<br />"+ "旬首"+xunshou+"(+1) -> 甲"+t.xunshou[xunshou]+t.liusan[xunshou]+" -> "+t.liusan[xunshou]+"在"+dgan.indexOf(xunshou)+"(+1)宫 -> "+t.baguabyG[dgan.indexOf(xunshou)]+"宫 -> xid:"+xid+" -> "+t.xingbyG[xid]+"星(值符);"+t.menbyG[xid]+"门(值使)";
-    dbg=dbg+"<br />"+ "时干为"+ab.substr(0,1)+" -> 在地盘中寻找 -> 位于"+t.baguabyG[xpos]+"宫 -> 确定了"+t.xingbyG[xid]+"星的位置";
+    osx=osx + "<hr /><ol><li>";
+    dbg=dbg+"地盘干 -> "+dgan;
+    dbg=dbg+"</li><li>"+ "旬首["+xunshou+"](+1) -> [甲"+t.xunshou[xunshou]+t.liusan[xunshou]+"] -> ["+t.liusan[xunshou]+"]在["+dgan.indexOf(xunshou)+"](+1)宫 -> ["+t.baguabyG[dgan.indexOf(xunshou)]+"]宫 -> xid:["+xid+"] -> 对应["+t.xingbyG[xid]+"]星(值符);["+t.menbyG[xid]+"]门(值使)";
+    dbg=dbg+"</li><li>"+ "时干为["+ab.substr(0,1)+"] -> 在地盘中寻找 -> 位于["+t.baguabyG[xpos]+"]宫 -> 确定了["+t.xingbyG[xid]+"]星的位置";
     temp2=(t.zhi.indexOf(ab.substr(1,1))-t.zhi.indexOf(t.xunshou[xunshou])+12)%12;
-    dbg=dbg+"<br />"+ "旬首地支为甲"+t.xunshou[xunshou]+ "的"+t.xunshou[xunshou]+ " -> 往后推"+temp2+"个元素 -> " + "为"+ab.substr(1,1)+"的时支 -> "+"阴阳"[(Math.abs(ju)+ju)/ju/2]+"遁就"+"逆顺"[(Math.abs(ju)+ju)/ju/2]+"着值符位置"+t.baguabyG[xpos]+"宫推"+temp2+"个元素 -> "+t.baguabyG[mpos]+"宫即为"+t.menbyG[xid]+"门(值使)位置";
-    dbg=dbg+"<br />"+ t.xingbyG[xid]+ "(" + t.baguabyG[xpos] + ") " + t.menbyB[mid] + "(" + t.baguabyG[mpos] + ")" + tgan
+    dbg=dbg+"</li><li>"+ "旬首地支为甲["+t.xunshou[xunshou]+ "]的["+t.xunshou[xunshou]+ "] -> 往后推["+temp2+"]个元素 -> " + "为["+ab.substr(1,1)+"]的时支 -> ["+"阴阳"[(Math.abs(ju)+ju)/ju/2]+"]遁就["+"逆顺"[(Math.abs(ju)+ju)/ju/2]+"]着值符位置["+t.baguabyG[xpos]+"]宫推["+temp2+"]个元素 -> ["+t.baguabyG[mpos]+"]宫即为["+t.menbyG[xid]+"]门(值使)位置";
+    temp2=(t.ordplate.indexOf(xpos)-t.ordplate.indexOf(dgan.indexOf(xunshou))+8)%8;
+    dbg=dbg+"</li><li>"+ "将旬首["+t.liusan[xunshou]+ "]放在时干["+ab.substr(0,1)+ "]的地盘宫位["+t.baguabyG[xpos]+"] -> 地盘的["+t.liusan[xunshou]+"]位于["+t.baguabyG[dgan.indexOf(xunshou)]+"]宫("+dgan.indexOf(xunshou)+") -> 后者顺时针推["+temp2+"]个元素到达前者位置";
+    dbg=dbg+"</li><li>";
+    dbg=dbg+"<br />宫格 地盘干 天盘干<br />";
+    for (var i=0;i<15;i++){dbg=dbg+">>"+t.baguabyG[t.ordplate[i%8]];}
+    for (var i=0;i<9;i++){
+        temp4=dgan.indexOf(i);
+        if (temp4==4) temp4=(ju>0)?tconfig.yangdunzhonggong-1:1;
+        temp3=t.ordplate[(temp2+t.ordplate.indexOf(temp4)+8)%8];
+        dbg=dbg+"<br />"+t.liusan[i]+"("+i+") -> "+t.baguabyG[dgan.indexOf(i)]+"("+dgan.indexOf(i)+") -> "+t.baguabyG[temp3]+"("+temp3+") -> "+(dgan.indexOf(i)-xid);
+    }
+    dbg=dbg+"</li><li>"+ t.xingbyG[xid]+ "(" + t.baguabyG[xpos] + ") " + t.menbyB[mid] + "(" + t.baguabyG[mpos] + ")" + t.ordplate
+    dbg=dbg+"</li>"
     osx=osx + dbg;
     return osx;
 }
