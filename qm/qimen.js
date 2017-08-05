@@ -35,6 +35,10 @@ var t={
         "休 生 伤 杜 景 死 惊 开".split(" "),
     "xingbyB":
         "辅 英 芮 柱 心 蓬 任 冲".split(" "),
+    "shbyB":
+        "值符 腾蛇 太阴 六合 白虎 玄武 九地 九天".split(" "),
+    "shenbyB":
+        "符 蛇 阴 合 虎 武 地 天".split(" "),
     "five":
         "木 火 土 金 水".split(" "),
     "star":
@@ -183,10 +187,11 @@ function yinyangju(dx){
 function setElements(dx){
     var ju=yinyangju(dx);
     var dgan=(ju>0)?"012345678":"087654321";
-    var tgan,star,men;
+    var seq=(ju>0)?"01234567":"07654321";
+    var tgan,star,men,shen;
     var k,xunshou,xid,xpos,xposzero,mid,mpos,spos
     var osx,jux,c,temp,temp2,temp3,temp4,temp5,dbg,spos0;
-    var st1,st2,st3,st4,st5,st6,st7;
+    var tg1,tg2,tg3,tg4,tg5,tg6,tg7,tg8;
     dbg="";
     //计算布局：地盘干
     jux=Math.abs(ju)-1;
@@ -223,6 +228,8 @@ function setElements(dx){
     //计算布局：天盘干，根据地盘干，进行旋转 时干所在宫位-旬首对应地盘
     var tgax=[9,9,9,9,9,9,9,9,9,9];
     var starx=[9,9,9,9,9,9,9,9,9,9];
+    var menx=[9,9,9,9,9,9,9,9,9,9];
+    var shenx=[9,9,9,9,9,9,9,9,9,9];
     ////旬首的地盘宫位不可为中宫，与上面xpos涉及转动
     temp2=dgan.indexOf(xunshou);
     //console.log(temp2);
@@ -248,47 +255,73 @@ function setElements(dx){
         }
         
         //星盘 中宫就是在xid做处理，这里没有记录额外信息
-        tg2=t.ordplate[(t.ordplate.indexOf(i)+tg1)%8];
+        //tg2=t.ordplate[(t.ordplate.indexOf(i)+tg1)%8];
         tg2=t.ordplate[(t.ordplate.indexOf(i)-tg1+8)%8];
-        console.log(i,"tg2",t.ordplate.indexOf(i),tg1,tg2);
+        //console.log(i,"tg2",t.ordplate.indexOf(i),tg1,tg2);
         starx[i]=tg2;
+        //门盘 都是顺时针
+        tg4=(mid+t.ordplate.indexOf(i)-t.ordplate.indexOf(mpos)+8)%8;
+        menx[i]=tg4;
+        //神盘 阳顺阴逆
+        tg5=seq[(t.ordplate.indexOf(i)-t.ordplate.indexOf(xpos)+8)%8];
+        console.log(i,xpos,"tg5",tg5,t.shenbyB[tg5]);
+        shenx[i]=tg5;
+        
       }
     tgan=tgax.join("");
     star=starx.join("");
+    men=menx.join("");
+    shen=shenx.join("");
     console.log(star);
     
     //打印布局
+    //osx="<h1><a style='text-decoration:none;' href='#now'>"+tconfig.apptitle+"</a></h1>";
     osx="<h1>"+tconfig.apptitle+"</h1>";
     osx=osx+"<br />" + "时间&nbsp;&nbsp;"+dx.toString();
     osx=osx+"<br />" + "节气&nbsp;&nbsp;"+"阴阳"[(Math.abs(ju)+ju)/ju/2]+"遁&nbsp;&nbsp;" + "零一二三四五六七八九"[Math.abs(ju)]+"局&nbsp;&nbsp;"+jieqi(dx).name+"&nbsp;&nbsp;"+"上中下"[sanyuan(dx)]+"元("+jieqi(dx).past+"天) ";
     osx=osx+"<br />" +"四柱&nbsp;&nbsp;"+nianzhu(dx)+"&nbsp;&nbsp;"+yuezhu(dx)+"&nbsp;&nbsp;"+rizhu(dx)+"&nbsp;&nbsp;"+shizhu(dx);
     osx=osx+"<br /><br />"
+    var boxes="........".split(".");
     for (var i=0;i<3;i++){
         for (var j=0;j<3;j++){
             //k为顺序数字
-            k=j+i*3;
+            k=j+i*3;tg6=k;
             //转换成宫格数字
             k=t.ordreal[k];
             if (k==4){
                 temp4=(ju>0)?tconfig.yangdunzhonggong-1:1;
-                osx=osx + t.liusan[dgan[k]]+t.baguabyG[temp4];
-                osx=osx + t.liusan[tgan.substr(-3,1)]+t.baguabyG[tgan.substr(-1,1)];
+                tg7=(ju>0)?tconfig.yangdunzhonggong-1:1;
+                tg8="&nbsp;&nbsp;&nbsp;&nbsp;寄&nbsp;&nbsp;&nbsp;&nbsp;";
+                boxes[tg6]=t.liusan[tgan.substr(-3,1)] + tg8 + t.baguabyG[tgan.substr(-1,1)] + "<br /><br />" + t.liusan[dgan[k]]+ tg8 +t.baguabyG[temp4] + "<br />" +  t.xingbyG[k] + tg8 + t.baguabyG[tg7];
             }
             else{                
             //osx=osx + k + ".";
-            osx=osx + t.baguabyG[k];
-            osx=osx + t.liusan[dgan[k]];
-            osx=osx + t.liusan[tgan[k]];
-            if (tg3==star[k]) osx=osx+"<span style='color:gold'>";
-            osx=osx + t.xingbyG[star[k]];
-            if (tg3==star[k]) osx=osx+"</span>";
-            
+            /*
+            显示格式：
+            神   星   天盘干
+            宫   门   地盘干
+            */
+            var xingstr=t.xingbyG[star[k]];
+            var menstr=t.menbyB[men[k]];
+            var shenstr=t.shenbyB[shen[k]];
+            if (tg3==star[k]) xingstr="<span style='color:yellow'>" + xingstr + "</span>";
+            if (mpos==k) menstr="<span style='color:yellow'>" + menstr + "</span>";
+            if (xpos==k) shenstr="<span style='color:yellow'>" + shenstr + "</span>";
+            boxes[tg6]=shenstr + "&nbsp;&nbsp;&nbsp;&nbsp;" + xingstr + "&nbsp;&nbsp;&nbsp;&nbsp;" + t.liusan[tgan[k]] + "<br /><br />" + t.baguabyG[k] + "&nbsp;&nbsp;&nbsp;&nbsp;" + menstr  + "&nbsp;&nbsp;&nbsp;&nbsp;" + t.liusan[dgan[k]] + "<br /><br />";
             }
-            osx=osx + "&nbsp;&nbsp;&nbsp;&nbsp;";
         }
-        osx=osx + "<br />";
     }
-    osx=osx + "<hr /><ol><li>";
+    console.log(boxes);
+    osx=osx+"<table border=1 style='empty-cells:show;border-collapse:collapse;'>";
+    for (var i=0;i<3;i++){
+        osx=osx+"<tr>";
+        for (var j=0;j<3;j++){
+            osx=osx+"<td>"+boxes[j+i*3]+"</td>";
+        }
+        osx=osx+"</tr>";
+    }
+    osx=osx+"</table>";
+    /*
     dbg=dbg+"地盘干 -> "+dgan;
     dbg=dbg+"</li><li>"+ "旬首["+xunshou+"](+1) -> [甲"+t.xunshou[xunshou]+t.liusan[xunshou]+"] -> ["+t.liusan[xunshou]+"]在["+dgan.indexOf(xunshou)+"](+1)宫 -> ["+t.baguabyG[dgan.indexOf(xunshou)]+"]宫 -> xid:["+xid+"] -> 对应["+t.xingbyG[xid]+"]星(值符);["+t.menbyG[xid]+"]门(值使)";
     dbg=dbg+"</li><li>"+ "时干为["+ab.substr(0,1)+"] -> 在地盘中寻找 -> 位于["+t.baguabyG[xpos]+"]宫 -> ["+t.baguabyG[xpos]+"]宫即为["+t.xingbyG[xid]+"]星的位置";
@@ -296,7 +329,6 @@ function setElements(dx){
     dbg=dbg+"</li><li>"+ "旬首地支为甲["+t.xunshou[xunshou]+ "]的["+t.xunshou[xunshou]+ "] -> 往后推["+temp2+"]个元素 -> " + "为["+ab.substr(1,1)+"]的时支 -> ["+"阴阳"[(Math.abs(ju)+ju)/ju/2]+"]遁就["+"逆顺"[(Math.abs(ju)+ju)/ju/2]+"]着值符位置["+t.baguabyG[xpos]+"]宫推["+temp2+"]个元素 -> ["+t.baguabyG[mpos]+"]宫即为["+t.menbyG[xid]+"]门(值使)位置";
     temp2=(t.ordplate.indexOf(xpos)-t.ordplate.indexOf(temp5)+8)%8;
     dbg=dbg+"</li><li>"+ "将旬首["+t.liusan[xunshou]+ "]放在时干["+ab.substr(0,1)+ "]的地盘宫位["+t.baguabyG[xpos]+"] -> 地盘的["+t.liusan[xunshou]+"]位于["+t.baguabyG[temp5]+"]宫("+dgan.indexOf(xunshou)+") -> 后者顺时针推["+temp2+"]个元素到达前者位置";
-    /*
     dbg=dbg+"</li><li>";
     dbg=dbg+"<br />干 天盘对应宫格 地盘对应宫格<br />";
     for (var i=0;i<15;i++){dbg=dbg+">>"+t.baguabyG[t.ordplate[i%8]];}
@@ -306,9 +338,9 @@ function setElements(dx){
         temp3=t.ordplate[(temp2+t.ordplate.indexOf(temp4)+8)%8];
         dbg=dbg+"<br />"+t.liusan[i]+"("+i+") -> "+t.baguabyG[dgan.indexOf(i)]+"("+dgan.indexOf(i)+") -> "+t.baguabyG[temp3]+"("+temp3+") -> "+(dgan.indexOf(i)-xid);
     }
-    */
     dbg=dbg+"</li><li>"+ t.xingbyG[xid]+ "(" + t.baguabyG[xpos] + ") " + t.menbyB[mid] + "(" + t.baguabyG[mpos] + ")" + t.ordplate
     dbg=dbg+"</li>"
+    */
     osx=osx + dbg;
     return osx;
 }
