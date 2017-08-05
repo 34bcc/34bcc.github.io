@@ -183,7 +183,7 @@ function setElements(dx){
     var dgan=(ju>0)?"012345678":"087654321";
     var tgan="38165072";
     var k,xunshou,xid,xpos,mid,mpos,spos
-    var osx,jux,c,temp,temp2,temp3,temp4,dbg,xpos0,mpos0,spos0;
+    var osx,jux,c,temp,temp2,temp3,temp4,temp5,dbg,xpos0,mpos0,spos0;
     dbg="";
     //0~8宫对应的六三序号，地盘干
     jux=Math.abs(ju)-1;
@@ -212,9 +212,10 @@ function setElements(dx){
     k=(ju>0)?(xid+k):(xid-k);
     k=(k+18)%9
     mpos=k;
-    //spos：八神位置
+    //xpos作为时干在地盘中的宫位，不可以在中间，涉及后面的转盘
     if (mpos==4) mpos=(ju>0)?tconfig.yangdunzhonggong-1:1;
     if (xpos==4) xpos=(ju>0)?tconfig.yangdunzhonggong-1:1;
+    //spos：八神位置
     spos=xpos;
     //天盘干：根据地盘干，进行旋转 时干所在宫位-旬首对应地盘
     c=(t.ordplate.indexOf(xpos)-t.ordplate.indexOf(dgan.indexOf(xunshou))+8)%8;
@@ -229,10 +230,15 @@ function setElements(dx){
     //计算宫位对应的天盘干
     var tgax=[9,9,9,9,9,9,9,9,9,9];
     tgan="000000000";
-    temp2=(t.ordplate.indexOf(xpos)-t.ordplate.indexOf(dgan.indexOf(xunshou))+8)%8;
+    //旬首的地盘宫位不可为中宫，与上面xpos涉及转动
+    temp2=dgan.indexOf(xunshou);
+    temp2=(ju>0)?tconfig.yangdunzhonggong-1:1;
+    temp5=temp2;
+    temp2=(t.ordplate.indexOf(xpos)-t.ordplate.indexOf(temp2)+8)%8;
     console.log("temp2",temp2);
     for (var i=0;i<9;i++){
         temp4=dgan.indexOf(i);
+        //若地盘干位于中宫，将移动后的天盘干数据存储到tgax[9]，小数点分隔为六三、宫位
         if (temp4==4) {
             temp4=(ju>0)?tconfig.yangdunzhonggong-1:1;
             temp3=t.ordplate[(temp2+t.ordplate.indexOf(temp4)+8)%8];
@@ -282,13 +288,14 @@ function setElements(dx){
     osx=osx + "<hr /><ol><li>";
     dbg=dbg+"地盘干 -> "+dgan;
     dbg=dbg+"</li><li>"+ "旬首["+xunshou+"](+1) -> [甲"+t.xunshou[xunshou]+t.liusan[xunshou]+"] -> ["+t.liusan[xunshou]+"]在["+dgan.indexOf(xunshou)+"](+1)宫 -> ["+t.baguabyG[dgan.indexOf(xunshou)]+"]宫 -> xid:["+xid+"] -> 对应["+t.xingbyG[xid]+"]星(值符);["+t.menbyG[xid]+"]门(值使)";
-    dbg=dbg+"</li><li>"+ "时干为["+ab.substr(0,1)+"] -> 在地盘中寻找 -> 位于["+t.baguabyG[xpos]+"]宫 -> 确定了["+t.xingbyG[xid]+"]星的位置";
+    dbg=dbg+"</li><li>"+ "时干为["+ab.substr(0,1)+"] -> 在地盘中寻找 -> 位于["+t.baguabyG[xpos]+"]宫 -> ["+t.baguabyG[xpos]+"]宫即为["+t.xingbyG[xid]+"]星的位置";
     temp2=(t.zhi.indexOf(ab.substr(1,1))-t.zhi.indexOf(t.xunshou[xunshou])+12)%12;
     dbg=dbg+"</li><li>"+ "旬首地支为甲["+t.xunshou[xunshou]+ "]的["+t.xunshou[xunshou]+ "] -> 往后推["+temp2+"]个元素 -> " + "为["+ab.substr(1,1)+"]的时支 -> ["+"阴阳"[(Math.abs(ju)+ju)/ju/2]+"]遁就["+"逆顺"[(Math.abs(ju)+ju)/ju/2]+"]着值符位置["+t.baguabyG[xpos]+"]宫推["+temp2+"]个元素 -> ["+t.baguabyG[mpos]+"]宫即为["+t.menbyG[xid]+"]门(值使)位置";
-    temp2=(t.ordplate.indexOf(xpos)-t.ordplate.indexOf(dgan.indexOf(xunshou))+8)%8;
-    dbg=dbg+"</li><li>"+ "将旬首["+t.liusan[xunshou]+ "]放在时干["+ab.substr(0,1)+ "]的地盘宫位["+t.baguabyG[xpos]+"] -> 地盘的["+t.liusan[xunshou]+"]位于["+t.baguabyG[dgan.indexOf(xunshou)]+"]宫("+dgan.indexOf(xunshou)+") -> 后者顺时针推["+temp2+"]个元素到达前者位置";
+    temp2=(t.ordplate.indexOf(xpos)-t.ordplate.indexOf(temp5)+8)%8;
+    dbg=dbg+"</li><li>"+ "将旬首["+t.liusan[xunshou]+ "]放在时干["+ab.substr(0,1)+ "]的地盘宫位["+t.baguabyG[xpos]+"] -> 地盘的["+t.liusan[xunshou]+"]位于["+t.baguabyG[temp5]+"]宫("+dgan.indexOf(xunshou)+") -> 后者顺时针推["+temp2+"]个元素到达前者位置";
+    /*
     dbg=dbg+"</li><li>";
-    dbg=dbg+"<br />宫格 地盘干 天盘干<br />";
+    dbg=dbg+"<br />干 天盘对应宫格 地盘对应宫格<br />";
     for (var i=0;i<15;i++){dbg=dbg+">>"+t.baguabyG[t.ordplate[i%8]];}
     for (var i=0;i<9;i++){
         temp4=dgan.indexOf(i);
@@ -296,6 +303,7 @@ function setElements(dx){
         temp3=t.ordplate[(temp2+t.ordplate.indexOf(temp4)+8)%8];
         dbg=dbg+"<br />"+t.liusan[i]+"("+i+") -> "+t.baguabyG[dgan.indexOf(i)]+"("+dgan.indexOf(i)+") -> "+t.baguabyG[temp3]+"("+temp3+") -> "+(dgan.indexOf(i)-xid);
     }
+    */
     dbg=dbg+"</li><li>"+ t.xingbyG[xid]+ "(" + t.baguabyG[xpos] + ") " + t.menbyB[mid] + "(" + t.baguabyG[mpos] + ")" + t.ordplate
     dbg=dbg+"</li>"
     osx=osx + dbg;
