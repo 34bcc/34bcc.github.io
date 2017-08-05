@@ -33,6 +33,8 @@ var t={
         "子 未申 卯 辰巳 _ 戌亥 酉 丑寅 午".split(" "),
     "menbyB":
         "休 生 伤 杜 景 死 惊 开".split(" "),
+    "xingbyB":
+        "辅 英 芮 柱 心 蓬 任 冲".split(" "),
     "five":
         "木 火 土 金 水".split(" "),
     "star":
@@ -181,11 +183,12 @@ function yinyangju(dx){
 function setElements(dx){
     var ju=yinyangju(dx);
     var dgan=(ju>0)?"012345678":"087654321";
-    var tgan="38165072";
-    var k,xunshou,xid,xpos,mid,mpos,spos
-    var osx,jux,c,temp,temp2,temp3,temp4,temp5,dbg,xpos0,mpos0,spos0;
+    var tgan,star,men;
+    var k,xunshou,xid,xpos,xposzero,mid,mpos,spos
+    var osx,jux,c,temp,temp2,temp3,temp4,temp5,dbg,spos0;
+    var st1,st2,st3,st4,st5,st6,st7;
     dbg="";
-    //0~8宫对应的六三序号，地盘干
+    //计算布局：地盘干
     jux=Math.abs(ju)-1;
     dgan=dgan.substr(-jux) + dgan.substr(0,9-jux); //if (k!=0)
     //根据时柱，计算天盘旬首：戊己庚辛壬癸0~5
@@ -200,13 +203,13 @@ function setElements(dx){
     //mid：门（值使）的序号，首先根据xid确定宫对应的门，需要再转换成八个里面的顺序
     xid=dgan.indexOf(xunshou);
     mid=t.menbyB.indexOf(t.menbyG[xid]);
-    //xpos：星（值符）位置即时干所在宫
+    //初始坐标xpos：星（值符）位置即时干所在宫
     //因为现在时间的天干有10种，宫只有9个，所以如果时干为甲，那么转换成旬首对应的六仪所在宫
     k=t.liusan.indexOf(ab.substr(0,1));
     k=(k<0)?xunshou:k;
     xpos=dgan.indexOf(k);
-    xpos0=xpos;
-    //mpos：门（值使）位置，根据 时支 与 旬首地支的差值，从 旬首宫位 开始，顺推门盘宫位
+    xposzero=xpos;
+    //初始坐标mpos：门（值使）位置，根据 时支 与 旬首地支的差值，从 旬首宫位 开始，顺推门盘宫位
     k=t.zhi.indexOf(ab.substr(1,1))-t.zhi.indexOf(t.xunshou[xunshou]);
     if (k<0) k=k+12;
     k=(ju>0)?(xid+k):(xid-k);
@@ -215,47 +218,45 @@ function setElements(dx){
     //xpos作为时干在地盘中的宫位，不可以在中间，涉及后面的转盘
     if (mpos==4) mpos=(ju>0)?tconfig.yangdunzhonggong-1:1;
     if (xpos==4) xpos=(ju>0)?tconfig.yangdunzhonggong-1:1;
-    //spos：八神位置
+    //初始坐标spos：八神位置
     spos=xpos;
-    //天盘干：根据地盘干，进行旋转 时干所在宫位-旬首对应地盘
-    c=(t.ordplate.indexOf(xpos)-t.ordplate.indexOf(dgan.indexOf(xunshou))+8)%8;
-    console.log("temp:",temp2,t.ordplate.indexOf(temp2)," ; ","xid",xid,t.ordplate.indexOf(xid),"xpos:",xpos)
-    c=(c-1+8)%8;
-    tgan="";
-    for (var i=0;i<t.ordplate.length;i++){
-        tgan=tgan + dgan[t.ordplate[i]];
-    }
-    tgan=tgan.substr(-(8-c)) + tgan.substr(0,c)
-    temp=tgan;
-    //计算宫位对应的天盘干
+    //计算布局：天盘干，根据地盘干，进行旋转 时干所在宫位-旬首对应地盘
     var tgax=[9,9,9,9,9,9,9,9,9,9];
-    tgan="000000000";
-    //旬首的地盘宫位不可为中宫，与上面xpos涉及转动
+    var starx=[9,9,9,9,9,9,9,9,9,9];
+    ////旬首的地盘宫位不可为中宫，与上面xpos涉及转动
     temp2=dgan.indexOf(xunshou);
     temp2=(ju>0)?tconfig.yangdunzhonggong-1:1;
     temp5=temp2;
     temp2=(t.ordplate.indexOf(xpos)-t.ordplate.indexOf(temp2)+8)%8;
-    console.log("temp2",temp2);
+    tg3=xid;
+    if (tg3==4) tg3=(ju>0)?tconfig.yangdunzhonggong-1:1;
+    tg1=t.ordplate.indexOf(xpos)-t.ordplate.indexOf(tg3);
+    tg1=(tg1+8)%8;
+    console.log("tg1",tg1,"xpos",xpos,"xid",xid);
     for (var i=0;i<9;i++){
-        temp4=dgan.indexOf(i);
-        //若地盘干位于中宫，将移动后的天盘干数据存储到tgax[9]，小数点分隔为六三、宫位
+        temp4=dgan.indexOf(i);        //若地盘干位于中宫，将移动后的天盘干数据存储到tgax[9]，小数点分隔为六三、宫位
+        //天盘干
         if (temp4==4) {
             temp4=(ju>0)?tconfig.yangdunzhonggong-1:1;
             temp3=t.ordplate[(temp2+t.ordplate.indexOf(temp4)+8)%8];
             tgax[9]=i+temp3/10;
         }
         else{
-            
             temp3=t.ordplate[(temp2+t.ordplate.indexOf(temp4)+8)%8];
             tgax[temp3]=i;
-            console.log("temp3",temp3,i,tgan);
         }
-    }
+        
+        //星盘 中宫就是在xid做处理，这里没有记录额外信息
+        tg2=t.ordplate[(t.ordplate.indexOf(i)+tg1)%8];
+        tg2=t.ordplate[(t.ordplate.indexOf(i)-tg1+8)%8];
+        console.log(i,"tg2",t.ordplate.indexOf(i),tg1,tg2);
+        starx[i]=tg2;
+      }
     tgan=tgax.join("");
-    console.log("tgan",tgan);
-    console.log(t.xingbyG[xid]+ "(" + t.baguabyG[xpos] + ") " + t.menbyB[mid] + "(" + t.baguabyG[mpos] + ")" + tgan);
+    star=starx.join("");
+    console.log(star);
     
-    //输出布局
+    //打印布局
     osx="<h1>"+tconfig.apptitle+"</h1>";
     osx=osx+"<br />" + "时间&nbsp;&nbsp;"+dx.toString();
     osx=osx+"<br />" + "节气&nbsp;&nbsp;"+"阴阳"[(Math.abs(ju)+ju)/ju/2]+"遁&nbsp;&nbsp;" + "零一二三四五六七八九"[Math.abs(ju)]+"局&nbsp;&nbsp;"+jieqi(dx).name+"&nbsp;&nbsp;"+"上中下"[sanyuan(dx)]+"元("+jieqi(dx).past+"天) ";
@@ -272,13 +273,14 @@ function setElements(dx){
                 osx=osx + t.liusan[dgan[k]]+t.baguabyG[temp4];
                 osx=osx + t.liusan[tgan.substr(-3,1)]+t.baguabyG[tgan.substr(-1,1)];
             }
-            else{
-                
-                
+            else{                
             //osx=osx + k + ".";
             osx=osx + t.baguabyG[k];
             osx=osx + t.liusan[dgan[k]];
             osx=osx + t.liusan[tgan[k]];
+            if (tg3==star[k]) osx=osx+"<span style='color:gold'>";
+            osx=osx + t.xingbyG[star[k]];
+            if (tg3==star[k]) osx=osx+"</span>";
             
             }
             osx=osx + "&nbsp;&nbsp;&nbsp;&nbsp;";
