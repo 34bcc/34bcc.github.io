@@ -312,11 +312,11 @@ function setElements(dx){
         }
     }
     console.log(boxes);
-    osx=osx+"<table border=1 style='empty-cells:show;border-collapse:collapse;'>";
+    osx=osx+"<table border=0 width=90% cellpadding=15% style='empty-cells:show;border-collapse:collapse;'>";
     for (var i=0;i<3;i++){
         osx=osx+"<tr>";
         for (var j=0;j<3;j++){
-            osx=osx+"<td>"+boxes[j+i*3]+"</td>";
+            osx=osx+"<td style='text-align:center;'>"+boxes[j+i*3]+"</td>";
         }
         osx=osx+"</tr>";
     }
