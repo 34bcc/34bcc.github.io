@@ -225,14 +225,15 @@ function setElements(dx){
     var starx=[9,9,9,9,9,9,9,9,9,9];
     ////旬首的地盘宫位不可为中宫，与上面xpos涉及转动
     temp2=dgan.indexOf(xunshou);
-    temp2=(ju>0)?tconfig.yangdunzhonggong-1:1;
+    //console.log(temp2);
+    if (temp2==4) temp2=(ju>0)?tconfig.yangdunzhonggong-1:1;
+    console.log(temp2);
     temp5=temp2;
     temp2=(t.ordplate.indexOf(xpos)-t.ordplate.indexOf(temp2)+8)%8;
     tg3=xid;
     if (tg3==4) tg3=(ju>0)?tconfig.yangdunzhonggong-1:1;
     tg1=t.ordplate.indexOf(xpos)-t.ordplate.indexOf(tg3);
     tg1=(tg1+8)%8;
-    console.log("tg1",tg1,"xpos",xpos,"xid",xid);
     for (var i=0;i<9;i++){
         temp4=dgan.indexOf(i);        //若地盘干位于中宫，将移动后的天盘干数据存储到tgax[9]，小数点分隔为六三、宫位
         //天盘干
