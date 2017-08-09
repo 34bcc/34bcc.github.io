@@ -725,7 +725,7 @@ function initQimen(dx){
             var xingstr=t.xingbyG[star[k]];
             var menstr=t.menbyB[men[k]];
             var shenstr=t.shenbyB[shen[k]];
-            var skonstr=(qimen.skon[k]==0)?"\u3000":"\u267B";
+            var skonstr=(qimen.skon[k]==0)?"\u3000":"&#9851";
             if (tg3==star[k]) xingstr="<span style='font-weight:bold;color:gold'>" + xingstr + "</span>";
             if (mpos==k) menstr="<span style='font-weight:bold;color:gold'>" + menstr + "</span>";
             if (xpos==k) shenstr="<span style='font-weight:bold;color:gold'>" + shenstr + "</span>";
