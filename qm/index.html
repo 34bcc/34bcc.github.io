@@ -5,41 +5,72 @@
 <script src="qimen.js"></script>
 <title>QIMEN</title>
 <style type="text/css">
-body{background-color:rgb(12,16,33);color:rgb(246,246,248);}
+body{background-color:rgb(12,16,33);color:rgb(246,246,248);line-height:150%;}
 h1 {text-align:center}
-h2 {font-weight: normal}
-h3 {font-weight: normal}
+h2 {font-weight:normal}
+h3 {font-weight:normal}
+td {text-align:left}
 </style>
 </head>
 <body>
 <div>
-<script>
-var dx=new Date();
-function loaddx(){
-var hash=window.location.hash.substr(1);
-if (hash=="" || hash=="now") {
-    dar=Array(String(dx.getFullYear()),String(dx.getMonth()+1),String(dx.getDate()),String(dx.getHours()),String(dx.getMinutes()),String(dx.getSeconds()));
-    for (var i=1;i<dar.length;i++){
-        if (dar[i].length<2)  dar[i]="0" + dar[i]
-    }
-    hash=dar.join("");
-    window.location.hash="#" + "now";
-}
-dx.setFullYear(hash.substr(0,4));
-dx.setMonth(hash.substr(4,2)-1);
-dx.setDate(hash.substr(6,2));
-dx.setHours(hash.substr(8,2));
-dx.setMinutes(hash.substr(10,2));
-dx.setSeconds(hash.substr(12,2));
-document.getElementsByTagName("div")[0].innerHTML=setElements(dx);
-}
-document.title=tconfig.apptitle;
-window.onhashchange=function(){
-    loaddx();
-}
-loaddx();
-</script>
-<p style="text-align:center">&copy;2017 jiamin</p>
+<p></p>
+<table border=0 width=80% cellpadding=15% style='empty-cells:show;border-collapse:collapse;'><tr>
+<td onclick="getbox(0)"></td>
+<td onclick="getbox(1)"></td>
+<td onclick="getbox(2)"></td>
+</tr><tr>
+<td onclick="getbox(3)"></td>
+<td onclick="getbox(4)"></td>
+<td onclick="getbox(5)"></td>
+</tr><tr>
+<td onclick="getbox(6)"></td>
+<td onclick="getbox(7)"></td>
+<td onclick="getbox(8)"></td>
+</tr></table>
+<p></p>
 </div>
+<script>
+//更新标题
+document.title=tconfig.apptitle;
+//初始化
+initQimen(gettime());
+//更新抬头
+document.getElementsByTagName('p')[0].innerHTML=qimen.boxhead;
+//更新九宫 
+for (var i=0;i<9;i++){
+    document.getElementsByTagName('td')[i].innerHTML=qimen.box[i];
+}
+function getbox(bid){
+    document.getElementsByTagName('p')[1].innerHTML=tellbox(t.ordreal[bid]);   
+    scrollTo(document.getElementsByTagName("p")[1].offsetLeft,document.getElementsByTagName("p")[1].offsetTop);
+}
+function gettime(){
+    var dx=new Date();
+    var hash=window.location.hash.substr(1);
+    if (hash=="" || hash=="now") {
+        dar=[String(dx.getFullYear()),String(dx.getMonth()+1),String(dx.getDate()),String(dx.getHours()),String(dx.getMinutes()),String(dx.getSeconds())];
+        for (var i=1;i<dar.length;i++){
+            if (dar[i].length<2)  dar[i]="0" + dar[i]
+        }
+        hash=dar.join("");
+        window.location.hash="#" + "now";
+    }
+    dx.setFullYear(hash.substr(0,4));
+    dx.setMonth(hash.substr(4,2)-1);
+    dx.setDate(hash.substr(6,2));
+    dx.setHours(hash.substr(8,2));
+    dx.setMinutes(hash.substr(10,2));
+    dx.setSeconds(hash.substr(12,2));
+    return dx;
+}
+window.onhashchange=function(){
+    //loaddx();
+}
+</script>
+</div>
+<div>
+</div>
+<p style="text-align:center">&copy;2017 jiamin</p>
 </body>
 </html>
