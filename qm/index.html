@@ -1,6 +1,7 @@
 <html>
 <head>
 <meta charset='utf-8' />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' *.iga.cc *.34b.cc localhost">
 <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <script src="qimen.js"></script>
 <title>QIMEN</title>
@@ -9,13 +10,13 @@ body{background-color:rgb(12,16,33);color:rgb(246,246,248);line-height:150%;}
 h1 {text-align:center}
 h2 {font-weight:normal}
 h3 {font-weight:normal}
-td {text-align:left}
+td {text-align:center}
 </style>
 </head>
 <body>
 <div>
 <p></p>
-<table border=0 width=80% cellpadding=15% style='empty-cells:show;border-collapse:collapse;'><tr>
+<table border=0 width=100% cellpadding=10% style='empty-cells:show;border-collapse:collapse;'><tr>
 <td onclick="getbox(0)"></td>
 <td onclick="getbox(1)"></td>
 <td onclick="getbox(2)"></td>
@@ -31,10 +32,11 @@ td {text-align:left}
 <p></p>
 </div>
 <script>
-//更新标题
-document.title=tconfig.apptitle;
 //初始化
+var hash;
 initQimen(gettime());
+//更新标题
+document.title=tconfig.apptitle + " "+hash.substr(2,2) + "-" + hash.substr(4,2) + "-" + hash.substr(6,2) + " " + hash.substr(8,2) + ":" + hash.substr(10,2);
 //更新抬头
 document.getElementsByTagName('p')[0].innerHTML=qimen.boxhead;
 //更新九宫 
@@ -47,7 +49,7 @@ function getbox(bid){
 }
 function gettime(){
     var dx=new Date();
-    var hash=window.location.hash.substr(1);
+    hash=window.location.hash.substr(1);
     if (hash=="" || hash=="now") {
         dar=[String(dx.getFullYear()),String(dx.getMonth()+1),String(dx.getDate()),String(dx.getHours()),String(dx.getMinutes()),String(dx.getSeconds())];
         for (var i=1;i<dar.length;i++){
