@@ -1,0 +1,26 @@
+<head>  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">  
+  <title>  
+  </title>  
+  <script src='csv.min.js'></script>
+  </head>  
+  <body>  
+    <a download="somedata.csv" href="data:application/csv;charset=utf-8,Col1%2CCol2%2CCol3%0AVal1%2CVal2%2CVal3%0AVal11%2CVal22%2CVal33%0AVal111%2CVal222%2CVal333">Example</a>  
+    <a onclick="exportCSV(this)" download="downlaod.csv" href="#">download</a>  
+</body>  
+  
+<script type="text/javascript">  
+function exportCSV(aLink){  
+    // 这里可以将后台返回的数据放入csvData，然后将其导出到csv保存  
+    var csvData = [];  
+    for(var i=0;i<10;i++){  
+        csvData.push(  
+            [i,i,i,i]  
+        );  
+    }  
+    var str = new CSV(csvData, { header: ["id", "名称", "部门", "职位"] }).encode();  
+    str =  encodeURIComponent(str);  
+    aLink.href = "data:text/csv;charset=utf-8,\ufeff"+str;  
+}  
+</script>    </body>  
+</html>  
